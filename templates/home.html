@@ -1,10 +1,69 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Find something</h1>
+
 <!-- TODO: change this to match your topic (e.g. "Search recipes", "Find a book") -->
-<form class="search" action="{{ url_for('search') }}" method="get">
-  <input type="text" name="q" placeholder="Search...">
-  <button type="submit">Search</button>
-</form>
+
+
+
+<h2>Suggested Movies</h2>
+  <div class="cards">
+    {% for movie in movies %}
+      <article class="card">
+
+        <a href="#">
+          <img src="{{ url_for('static', filename='images/' + movie.poster) }}" alt="{{  movie.title }} poster">
+
+          <header class="movie-info">
+            <h2>{{ movie.title }}</h2>
+            <p>{{ movie.release_date }} - {{ movie.genres }}</p>
+            <p class="rating"> {{ movie.vote_average }}/10</p>
+          </header>
+
+        </a>
+
+      </article>
+    {% else %}
+      <p>No movies available.</p>
+    {% endfor %}
+  </div>
+
+<h2>This Week's Trending Movies</h2>
+  <div class="cards">
+    {% for movie in movies %}
+      <article class="card">
+
+        <a href="#">
+          <img src="{{ url_for('static', filename='images/' + movie.poster) }}" alt="{{  movie.title }} poster">
+
+          <header class="movie-info">
+            <h2>{{ movie.title }}</h2>
+            <p>{{ movie.release_date }} - {{ movie.genres }}</p>
+            <p class="rating"> {{ movie.vote_average }}/10</p>
+          </header>
+
+        </a>
+
+      </article>
+    {% else %}
+      <p>No movies available.</p>
+    {% endfor %}
+  </div>
+
+<h2>Marathon</h2>
+  <p class="hint"><em>Create a marathon and binge watch movies with friends !</em></p>
+  <button type="marathon">Create new Marathon</button>
+
+<h2>title</h2>
+/*hffjdjd*/
+
+<h2>title</h2>
+/*hffjdjd*/
+
+<h2>title</h2>
+/*hffjdjd*/
+
+<h2>title</h2>
+/*hffjdjd*/
+
 <p class="hint">This starter shows sample items. Edit <code>api_client.py</code> to use your own API.</p>
 {% endblock %}

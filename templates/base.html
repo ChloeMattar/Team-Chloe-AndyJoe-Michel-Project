@@ -1,31 +1,46 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}MatchIt{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+
   <header class="nav">
-    <a class="brand" href="{{ url_for('home') }}">MatchIt</a>
+    <a class="brand" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/MatchIt-Golden-Cinema-Emblem.png') }}" alt="MatchIt" width="100" ></a>
+
     <nav>
-      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('home') }}"><strong>Home</strong></a>
+
       {% if current_user %}
-        <a href="{{ url_for('favorites') }}">My Favorites</a>
+        <a href="{{ url_for('favorites') }}"><strong>My Favorites</strong></a>
         <span class="who">{{ current_user.email }}</span>
-        <a href="{{ url_for('logout') }}">Log out</a>
+        <a href="{{ url_for('logout') }}"><strong>Log out</strong></a>
       {% else %}
-        <a href="{{ url_for('login') }}">Log in</a>
-        <a href="{{ url_for('signup') }}">Sign up</a>
+        <a href="{{ url_for('login') }}"><strong>Log in</strong></a>
+        <a href="{{ url_for('signup') }}"><strong>Sign up</strong></a>
       {% endif %}
+
+      <form class="search" action="{{ url_for('search') }}" method="get">
+        <input type="text" name="q" placeholder="Search...">
+        <button type="submit">Search</button>
+      </form>
     </nav>
+
   </header>
+
   <main class="container">
     {% with messages = get_flashed_messages() %}
       {% if messages %}<div class="flash">{% for m in messages %}<p>{{ m }}</p>{% endfor %}</div>{% endif %}
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+
 </body>
+
+<footer>This site is made for educational purposes.</footer>
 </html>
