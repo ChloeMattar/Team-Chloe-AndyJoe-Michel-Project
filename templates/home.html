@@ -3,22 +3,19 @@
 
 <!-- TODO: change this to match your topic (e.g. "Search recipes", "Find a book") -->
 
-
-
 <h2>Suggested Movies</h2>
   <div class="cards">
-    {% for movie in movies %}
+    {% for movie in items %}
       <article class="card">
 
-        <a href="#">
-          <img src="{{ url_for('static', filename='images/' + movie.poster) }}" alt="{{  movie.title }} poster">
+        <a href="{{ url_for('item', item_id=movie.id) }}">
+          <img src="{{ movie.image }}" alt="{{ movie.title }} poster">
 
           <header class="movie-info">
             <h2>{{ movie.title }}</h2>
             <p>{{ movie.release_date }} - {{ movie.genres }}</p>
             <p class="rating"> {{ movie.vote_average }}/10</p>
           </header>
-
         </a>
 
       </article>

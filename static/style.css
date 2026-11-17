@@ -6,7 +6,7 @@
     --bg: #f6f8fb;
     --line: #dbe3ee;
     --err: #c0392b;
-       --font-heading: 'Montserrat', Arial, sans-serif;
+    --font-heading: 'Montserrat', Arial, sans-serif;
     --font-body: 'Raleway', Arial, sans-serif;
     --font-code: Consolas, monospace;
 
@@ -23,7 +23,7 @@ body {
 }
 
 .nav {
-       width: 95%;
+    width: 95%;
     display: flex;
     margin-left:auto;
     margin-right:auto;
@@ -40,6 +40,7 @@ body {
     -webkit-backdrop-filter: blur(12px);
 
     color: #fff;
+    border-radius: 50px;
 }
 
 .nav nav {
@@ -49,17 +50,17 @@ body {
 }
 
 .nav nav a {
-       font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-       font-variant: small-caps;
-       padding: 5px;    
-       color: #ff111195;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-variant: small-caps;
+    padding: 5px;    
+    color: #ff111195;
     text-decoration: none;
     margin: auto;
 }
 
 .nav nav a:hover {
-       padding: 5px;
-       background-color: #f0d599;
+    padding: 5px;
+    background-color: #f0d599;
     color: #ff0000;
 }
 
@@ -70,7 +71,7 @@ body {
 }
 
 .container {
-    max-width: 980px;
+    max-width: 90%;
     margin: 0 auto;
     padding: 1.5rem 1.2rem;
 }
@@ -80,9 +81,9 @@ h1 {
 }
 
 h2 {
-       font-size: 2.3rem;
-       color:#e1c078;
-       font-family: var(--font-heading);
+    font-size: 2.3rem;
+    color:#e1c078;
+    font-family: var(--font-heading);
 }
 
 .hint {
