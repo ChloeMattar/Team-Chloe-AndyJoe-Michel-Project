@@ -1,52 +1,83 @@
-"""
-api_client.py  --  ALL calls to your external API live here (one place).
-
-RIGHT NOW this returns a few SAMPLE items so the app runs out of the box.
-TODO (your team): replace the sample data with real calls to your chosen free
-API, keeping the SAME return shapes so the rest of the app keeps working:
-
-    search(query)   -> a list of dicts, each: {"id", "title", "image"}
-    get_item(id)    -> one dict: {"id", "title", "image", "description"}
-"""
+import os
 import requests  # you'll use this for the real API calls
+from dotenv import load_dotenv 
+load_dotenv() #loads variable of env into python environment
+TMDB_TOKEN = os.environ.get("TMDB_TOKEN") #Reads the environment variables, not directly .env
+BASE_URL = "https://api.themoviedb.org/3" 
+IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
 TIMEOUT = 6  # seconds; give up instead of hanging if the API is slow
 
-# ----- temporary sample data (delete once your API works) -----
-_SAMPLE = [
-    {"id": "1", "title": "Example Item One",
-     "image": "https://picsum.photos/id/1011/400/300",
-     "description": "Replace this with a real description from your API."},
-    {"id": "2", "title": "Example Item Two",
-     "image": "https://picsum.photos/id/1025/400/300",
-     "description": "Replace this with a real description from your API."},
-    {"id": "3", "title": "Example Item Three",
-     "image": "https://picsum.photos/id/1039/400/300",
-     "description": "Replace this with a real description from your API."},
-]
+HEADERS = {
+    "Authorization": f"Bearer {TMDB_TOKEN}",
+    "accept": "application/json"
+}
 
+def tmdb_get(endpoint, params=None):
+    """Send a GET request to TMDb and return its JSON data."""
+    try:
+        r = requests.get(BASE_URL + endpoint,
+    headers=HEADERS,
+    params=params,
+    timeout=TIMEOUT
+    ) 
+        if r.status_code != 200: 
+            return None
+        data = r.json()
+    except requests.exceptions.JSONDecodeError as error:
+        print("TMDb request failed:", error)
+        return None
+    except requests.exceptions.RequestException as error:
+        print("TMDb request failed:", error)
+        return None
+    return data
 
 def search(query):
     """Return a list of items matching the query."""
-    # TODO: call your API instead, e.g.
-    #   r = requests.get("https://api.example.com/search",
-    #                    params={"q": query}, timeout=TIMEOUT)
-    #   if r.status_code != 200:
-    #       return []
-    #   data = r.json()
-    #   return [{"id": x["id"], "title": x["name"], "image": x["thumb"]}
-    #           for x in data["results"]]
-    q = query.lower()
-    hits = [it for it in _SAMPLE if q in it["title"].lower()]
-    return hits or _SAMPLE
+    data = tmdb_get("/search/movie", params={"query": query})
+
+    if data is None:
+        return[]
+    return [{"id": x["id"], 
+            "title": x.get("title", "Unknown Title"), 
+            "image": IMAGE_BASE_URL + x["poster_path"] if x.get("poster_path") else None, 
+            "release_date": x.get("release_date", ""), 
+            "vote_average": x.get("vote_average",None)
+            }
+             for x in data.get("results",[])]
 
 
 def get_item(item_id):
     """Return one item by its id, or None if not found."""
-    # TODO: call your API for one item, e.g.
-    #   r = requests.get(f"https://api.example.com/item/{item_id}", timeout=TIMEOUT)
-    #   ...
-    for it in _SAMPLE:
-        if it["id"] == item_id:
-            return it
-    return None
+    
+    data = tmdb_get(
+    f"/movie/{item_id}",
+    params={"append_to_response": "credits,videos,similar"}
+    )
+    if data is None:
+        return None
+    return {
+        "id" : data["id"],
+        "title" : data["title"],
+        "image": IMAGE_BASE_URL + data["poster_path"] if data.get("poster_path") else None,        
+        "description" : data.get("overview",""),
+        "genres" : data.get("genres",[]), 
+        "runtime" : data.get("runtime"), 
+        "vote_average" : data.get("vote_average", None),
+        "cast": data.get("credits", {}).get("cast", []),
+        "release_date": data.get("release_date", ""), 
+        "trailers": [
+        video for video in data.get("videos", {}).get("results", [])
+        if video.get("type") == "Trailer"
+        and video.get("site") == "YouTube"],
+        "similar": [
+            {"id": movie["id"], 
+            "title": movie["title"], 
+            "image": IMAGE_BASE_URL + movie["poster_path"] if movie.get("poster_path") else None,
+            "release_date": movie.get("release_date"), 
+            "vote_average": movie.get("vote_average")
+            }
+        
+        for movie in data.get("similar", {}).get("results", [])
+        ]
+    }
