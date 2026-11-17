@@ -1,9 +1,9 @@
 """
-<YOUR PROJECT NAME> -- a Flask web app (team project starter).
+<MatchIt> -- a Flask web app (team project starter).
 
-Content comes from an external API (see api_client.py). The only data stored
-is user accounts and their favorites (see models.py). Authentication is
-email + password with Flask sessions.
+Content comes from an external API (see api_client.py). The database stores user accounts, favorites, marathons, and marathon movies 
+Authentication uses username, email, password,
+and Flask sessions.
 
 Run locally:   flask run --debug    ->   http://127.0.0.1:5000
 """
@@ -14,9 +14,13 @@ from flask import (Flask, render_template, request, redirect, url_for,
                    session, flash, abort)
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from models import db, User, Favorite
+from models import db, User, Favorite, Marathon, MarathonMovie
 import api_client
+
 from validators import validate_signup, validate_login
+
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
@@ -47,9 +51,9 @@ def inject_globals():
     user = None
     favorite_ids = set()
     if "user_id" in session:
-        user = User.query.get(session["user_id"])
+        user = db.session.get(User, session["user_id"])
         if user:
-            favorite_ids = {f.item_id for f in user.favorites}
+            favorite_ids = {f.movie_id for f in user.favorites}
     return {"current_user": user, "favorite_ids": favorite_ids}
 
 
@@ -104,22 +108,50 @@ def item(item_id):
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        # TODO: implement sign-up (see the Sessions & Login slides).
-        pass
+        errors, data = validate_signup(request.form) # Validate the submitted information
+        if User.query.filter_by(username=data["username"]).first():
+            errors["username"] = "Username already exists." # Check if username already exists
+        if User.query.filter_by(email=data["email"]).first():
+            errors["email"] = "Email already exists." # Check if email already exists
+        if not errors:
+            # Create the user
+            user = User(
+                username=data["username"],
+                email=data["email"],
+                password_hash=generate_password_hash(request.form.get("password","")))
+            
+            db.session.add(user)
+            db.session.commit()
+            # Store the user ID in the session
+            session.clear()  # Clear any existing session data
+            session["user_id"] = user.user_id
+            flash("Account created successfully.")
+            return redirect(url_for("home"))
+        return render_template("signup.html", errors=errors, data=data)
+
     return render_template("signup.html", errors={}, data={})
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        # TODO: implement log-in (see the Sessions & Login slides).
-        pass
+        errors, email = validate_login(request.form) # Validate the submitted information
+        user = User.query.filter_by(email=email).first() # Find the user by email
+        if not user or not check_password_hash(user.password_hash, request.form.get("password", "")):
+            errors["login"] = "Invalid email or password."
+            
+        if not errors:
+            session.clear()  # Clear any existing session data
+            session["user_id"] = user.user_id
+            flash("Logged in successfully.")
+            return redirect(url_for("home"))
+        return render_template("login.html", errors=errors, data={"email": email}) # Show errors if login fails
     return render_template("login.html", errors={}, data={})
 
 
 @app.route("/logout")
 def logout():
-    # TODO: end the session (hint: session.clear()), then redirect home.
+    session.clear() # Clear the session to log the user out 
     return redirect(url_for("home"))
 
 
@@ -137,14 +169,13 @@ def favorites_add():
     item_id = request.form.get("item_id", "").strip()
     if item_id:
         exists = Favorite.query.filter_by(
-            user_id=session["user_id"], item_id=item_id).first()
+            user_id=session["user_id"], movie_id=item_id).first()
         if exists:
             flash("Already in your favorites.")
         else:
             db.session.add(Favorite(
-                user_id=session["user_id"], item_id=item_id,
-                item_title=request.form.get("item_title", ""),
-                item_image=request.form.get("item_image", "")))
+                user_id=session["user_id"], movie_id=item_id,
+                ))
             db.session.commit()
             flash("Saved to favorites.")
     return redirect(request.form.get("next") or url_for("favorites"))
@@ -155,7 +186,7 @@ def favorites_add():
 def favorites_remove():
     item_id = request.form.get("item_id", "").strip()
     fav = Favorite.query.filter_by(
-        user_id=session["user_id"], item_id=item_id).first()
+        user_id=session["user_id"], movie_id=item_id).first()
     if fav:
         db.session.delete(fav)
         db.session.commit()
