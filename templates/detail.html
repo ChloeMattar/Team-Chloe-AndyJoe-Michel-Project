@@ -3,7 +3,11 @@
 {% block content %}
 <article class="detail">
   <h1>{{ item.title }}</h1>
+  {% if item.image %}
   <img class="hero" src="{{ item.image }}" alt="{{ item.title }}">
+{% else %}
+  <p>No poster available.</p>
+{% endif %}
 
   {% if current_user %}
     {% if item.id in favorite_ids %}
@@ -15,8 +19,6 @@
     {% else %}
       <form method="post" action="{{ url_for('favorites_add') }}">
         <input type="hidden" name="item_id" value="{{ item.id }}">
-        <input type="hidden" name="item_title" value="{{ item.title }}">
-        <input type="hidden" name="item_image" value="{{ item.image }}">
         <input type="hidden" name="next" value="{{ request.path }}">
         <button class="btn save">Save to favorites</button>
       </form>
@@ -25,7 +27,42 @@
     <p><a href="{{ url_for('login') }}">Log in</a> to save this.</p>
   {% endif %}
 
-  <!-- TODO: show the fields your API returns -->
-  <p class="description">{{ item.description }}</p>
+<h2>Synopsis</h2>
+{% if item.description %}
+    <p>{{ item.description }}</p>
+{% else %}
+    <p>No description available.</p>
+{% endif %}
+
+<h2>Genres</h2>
+{% if item.genres %}
+    {% for genre in item.genres %}
+        <span>{{ genre.name }}</span>
+    {% endfor %}
+{% else %}
+    <p>No genres available.</p>
+{% endif %}
+
+<h2>Duration</h2>
+{% if item.runtime %}
+    <p>{{ item.runtime }} minutes</p>
+{% else %}
+    <p>Duration not available.</p>
+{% endif %}
+
+<h2>Rating</h2>
+{% if item.vote_average is not none %}
+    <p>{{ item.vote_average | round(1) }}/10</p>
+{% else %}
+    <p>No rating available.</p>
+{% endif %}
+
+<h2>Release Date</h2>
+{% if item.release_date %}
+    <p>{{ item.release_date }}</p>
+{% else %}
+    <p>Release date not available.</p>
+{% endif %}
+
 </article>
 {% endblock %}

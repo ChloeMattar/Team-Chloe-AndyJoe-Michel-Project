@@ -38,3 +38,10 @@ def validate_login(form):
     if password == "":
         errors["password"] = "Password is required."
     return errors, email
+
+def validate_search(query):
+    if query == "":
+        return "Please enter a movie title."
+    if len(query) > 100:
+        return "Search must be less than 100 characters"
+    return None
