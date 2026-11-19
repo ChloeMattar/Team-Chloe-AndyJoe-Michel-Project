@@ -7,7 +7,10 @@
 {% if not query %}
 <p>Enter a movie title in the search bar.</p>
 
-{% elif items %}
+{% elif not items %}
+<p>No results available !</p>
+
+{% else %}
   <div class="cards">
     {% for movie in items %}
       <article class="card">
@@ -17,7 +20,7 @@
 
           <header class="movie-info">
             <h2>{{ movie.title }}</h2>
-            <p>{{ movie.release_date }} - {{ movie.genres }}</p>
+            <p>{{ movie.release_date }} - {{ movie.list }}</p>
             <p class="rating"> {{ movie.vote_average }}/10</p>
           </header>
 
