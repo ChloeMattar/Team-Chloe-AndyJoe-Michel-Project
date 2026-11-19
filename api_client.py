@@ -32,16 +32,34 @@ def tmdb_get(endpoint, params=None):
         return None
     return data
 
+def get_genre_map():
+    genres_data = tmdb_get("/genre/movie/list")
+    if genres_data is None:
+        return {}
+    genres = genres_data.get("genres", [])
+    genre_map = {}
+    for genre in genres:
+        genre_id = genre.get("id")
+        genre_name = genre.get("name")
+        genre_map[genre_id] = genre_name
+    return genre_map
+    
+
 def search(query):
     """Return a list of items matching the query."""
     data = tmdb_get("/search/movie", params={"query": query})
 
     if data is None:
         return[]
+    genre_map = get_genre_map()
     return [{"id": x["id"], 
             "title": x.get("title", "Unknown Title"), 
             "image": IMAGE_BASE_URL + x["poster_path"] if x.get("poster_path") else None, 
             "release_date": x.get("release_date", ""), 
+            "genres": [
+                    genre_map.get(genre_id)
+                    for genre_id in x.get("genre_ids", [])
+                    if genre_id in genre_map],
             "vote_average": x.get("vote_average",None)
             }
              for x in data.get("results",[])]
@@ -81,3 +99,8 @@ def get_item(item_id):
         for movie in data.get("similar", {}).get("results", [])
         ]
     }
+
+
+
+       
+
