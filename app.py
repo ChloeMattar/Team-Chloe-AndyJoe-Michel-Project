@@ -91,6 +91,9 @@ def search():
 
 @app.route("/item/<item_id>")
 def item(item_id):
+    # Validate the movie ID
+    if not item_id.isascii() or not item_id.isdigit() or int(item_id) <= 0:
+        abort(404)
     data = api_client.get_item(item_id)
     if not data:
         abort(404)
@@ -141,22 +144,29 @@ def signup():
     return render_template("signup.html", errors={}, data={})
 
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        errors, email = validate_login(request.form) # Validate the submitted information
-        user = User.query.filter_by(email=email).first() # Find the user by email
-        if not user or not check_password_hash(user.password_hash, request.form.get("password", "")):
-            errors["login"] = "Invalid email or password."
-            
+        errors, username = validate_login(request.form)
+        # Find the user by username
+        user = User.query.filter_by(username=username).first()
+        # Check the username and password
+        if not user or not check_password_hash(
+            user.password_hash, request.form.get("password", "")
+        ):
+            errors["login"] = "Invalid username or password."
         if not errors:
-            session.clear()  # Clear any existing session data
+            session.clear()
             session["user_id"] = user.user_id
             flash("Logged in successfully.")
             return redirect(url_for("home"))
-        return render_template("login.html", errors=errors, data={"email": email}) # Show errors if login fails
+        return render_template(
+            "login.html",
+            errors=errors,
+            data={"username": username}
+        )
     return render_template("login.html", errors={}, data={})
-
 
 @app.route("/logout")
 def logout():

@@ -13,13 +13,11 @@
     {% if item.id in favorite_ids %}
       <form method="post" action="{{ url_for('favorites_remove') }}">
         <input type="hidden" name="item_id" value="{{ item.id }}">
-        <input type="hidden" name="next" value="{{ request.path }}">
         <button class="btn remove">Remove from favorites</button>
       </form>
     {% else %}
       <form method="post" action="{{ url_for('favorites_add') }}">
         <input type="hidden" name="item_id" value="{{ item.id }}">
-        <input type="hidden" name="next" value="{{ request.path }}">
         <button class="btn save">Save to favorites</button>
       </form>
     {% endif %}
@@ -37,7 +35,7 @@
 <h2>Genres</h2>
 {% if item.genres %}
     {% for genre in item.genres %}
-        <span>{{ genre.name }}</span>
+        <span>{{ genre.name }}</span>{% if not loop.last %}, {% endif %}
     {% endfor %}
 {% else %}
     <p>No genres available.</p>
@@ -62,6 +60,61 @@
     <p>{{ item.release_date }}</p>
 {% else %}
     <p>Release date not available.</p>
+{% endif %}
+
+<h2>Cast</h2>
+{% if item.cast %}
+    <ul class="cast-list">
+        {% for actor in item.cast %}
+            <li>
+                {{ actor.name }} as {{ actor.character }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No cast information available.</p>
+{% endif %}
+
+<h2>Trailers</h2>
+{% if item.trailers %}
+    <ul>
+        {% for trailer in item.trailers %}
+            <li>
+                <a href="https://www.youtube.com/watch?v={{ trailer.key }}" target="_blank" rel="noopener noreferrer">
+                    {{ trailer.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No trailers available.</p>
+{% endif %}
+
+<h2>Similar Movies</h2>
+{% if item.similar %}
+    <div class="similar-movies">
+        {% for movie in item.similar %}
+            <div class="movie-card">
+                <a href="{{ url_for('item', item_id=movie.id) }}">
+                    {% if movie.image %}
+                        <img src="{{ movie.image }}" alt="{{ movie.title }} poster">
+                    {% else %}
+                        <p>No poster available.</p>
+                    {% endif %}
+
+                    <h3>{{ movie.title }}</h3>
+                </a>
+
+                {% if movie.vote_average is not none %}
+                    <p>Rating: {{ movie.vote_average | round(1) }}/10</p>
+                {% else %}
+                    <p>No rating available.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No similar movies available.</p>
 {% endif %}
 
 </article>

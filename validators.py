@@ -29,15 +29,17 @@ def validate_signup(form):
     return errors, data
 
 
+
 def validate_login(form):
     errors = {}
-    email = form.get("email", "").strip().lower()
+    username = form.get("username", "").strip()
     password = form.get("password", "")
-    if email == "":
-        errors["email"] = "Email is required."
+    if username == "":
+        errors["username"] = "Username is required."
     if password == "":
         errors["password"] = "Password is required."
-    return errors, email
+    return errors, username
+
 
 def validate_search(query):
     if query == "":
