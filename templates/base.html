@@ -11,10 +11,9 @@
 <body>
 
   <header class="nav">
-    <a class="brand" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/MatchIt-Cinema-Emblem.png') }}" alt="MatchIt" width="100" ></a>
-    <a class="brand" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/TMDB-Logo-Long.png') }}" alt="MatchIt" width="200" ></a>
+    <a class="brand1" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/MatchIt-Cinema-Emblem.png') }}" alt="MatchIt" width="100" ></a>
+    <a class="brand2" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/TMDB-Logo-Long.png') }}" alt="MatchIt" width="200" ></a>
 
-    <nav>
       <a href="{{ url_for('home') }}"><strong>Home</strong></a>
 
       {% if current_user %}
@@ -30,7 +29,6 @@
         <input type="text" name="q" placeholder="Search...">
         <button type="submit">Search</button>
       </form>
-    </nav>
 
   </header>
 
