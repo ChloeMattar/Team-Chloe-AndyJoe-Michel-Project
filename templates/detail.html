@@ -2,65 +2,86 @@
 {% block title %}{{ item.title }}{% endblock %}
 {% block content %}
 <article class="detail">
-  <h1>{{ item.title }}</h1>
-  {% if item.image %}
-  <img class="hero" src="{{ item.image }}" alt="{{ item.title }}">
+
+{# Large movie backdrop on the right (item.backdrop comes from api_client.get_item) #}
+<div class="detail-backdrop"{% if item.backdrop %} style="background-image: url('{{ item.backdrop }}');"{% endif %}></div>
+
+<section class="detail-main">
+
+<div class="detail-poster">
+{% if item.image %}
+    <img src="{{ item.image }}" alt="{{ item.title }} poster">
 {% else %}
-  <p>No poster available.</p>
+    <p>No poster available.</p>
+{% endif %}
+</div>
+
+<div class="detail-info">
+
+{% if request.args.get("from_random") == "1" %}
+<a href="/preview-pick-movie" class="back-pick-button">← Back</a>
 {% endif %}
 
-  {% if current_user %}
-    {% if item.id in favorite_ids %}
-      <form method="post" action="{{ url_for('favorites_remove') }}">
-        <input type="hidden" name="item_id" value="{{ item.id }}">
-        <button class="btn remove">Remove from favorites</button>
-      </form>
-    {% else %}
-      <form method="post" action="{{ url_for('favorites_add') }}">
-        <input type="hidden" name="item_id" value="{{ item.id }}">
-        <button class="btn save">Save to favorites</button>
-      </form>
-    {% endif %}
-  {% else %}
-    <p><a href="{{ url_for('login') }}">Log in</a> to save this.</p>
-  {% endif %}
+<h1>{{ item.title }}</h1>
 
-<h2>Synopsis</h2>
-{% if item.description %}
-    <p>{{ item.description }}</p>
-{% else %}
-    <p>No description available.</p>
+{% if item.vote_average or item.release_date or item.runtime %}
+<p class="detail-meta">
+{% if item.vote_average %}
+    <span>⭐ {{ item.vote_average | round(1) }}/10</span>
 {% endif %}
-
-<h2>Genres</h2>
-{% if item.genres %}
-    {% for genre in item.genres %}
-        <span>{{ genre.name }}</span>{% if not loop.last %}, {% endif %}
-    {% endfor %}
-{% else %}
-    <p>No genres available.</p>
-{% endif %}
-
-<h2>Duration</h2>
-{% if item.runtime %}
-    <p>{{ item.runtime }} minutes</p>
-{% else %}
-    <p>Duration not available.</p>
-{% endif %}
-
-<h2>Rating</h2>
-{% if item.vote_average is not none %}
-    <p>{{ item.vote_average | round(1) }}/10</p>
-{% else %}
-    <p>No rating available.</p>
-{% endif %}
-
-<h2>Release Date</h2>
 {% if item.release_date %}
-    <p>{{ item.release_date }}</p>
-{% else %}
-    <p>Release date not available.</p>
+    <span title="{{ item.release_date }}">{{ item.release_date[:4] }}</span>
 {% endif %}
+{% if item.runtime %}
+    <span>{% if item.runtime >= 60 %}{{ item.runtime // 60 }}h{% endif %}{% if item.runtime % 60 %} {{ item.runtime % 60 }}m{% endif %}</span>
+{% endif %}
+</p>
+{% endif %}
+
+{% if item.genres %}
+<div class="genre-badges">
+{% for genre in item.genres %}
+    <span class="genre-badge">{{ genre.name }}</span>
+{% endfor %}
+</div>
+{% endif %}
+
+{% if item.description %}
+<p class="description">{{ item.description }}</p>
+{% else %}
+<p class="description">No description available.</p>
+{% endif %}
+
+<div class="detail-actions">
+
+{% if current_user %}
+    {% if item.id in favorite_ids %}
+    <form method="post" action="{{ url_for('favorites_remove') }}">
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <button class="action-btn remove-btn"><span class="btn-icon" aria-hidden="true">♥</span> Remove from Favorites</button>
+    </form>
+    {% else %}
+    <form method="post" action="{{ url_for('favorites_add') }}">
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <button class="action-btn favorite-btn"><span class="btn-icon" aria-hidden="true">♡</span> Add to Favorites</button>
+    </form>
+    {% endif %}
+{% else %}
+    <a href="{{ url_for('login') }}" class="action-btn favorite-btn"><span class="btn-icon" aria-hidden="true">♡</span> Add to Favorites</a>
+{% endif %}
+
+<a href="{{ url_for('marathons') }}" class="action-btn marathon-btn"><span class="btn-icon" aria-hidden="true">⊕</span> Add to Marathon</a>
+
+</div>
+
+{% if not current_user %}
+<p class="hint"><a href="{{ url_for('login') }}">Log in</a> to save this.</p>
+{% endif %}
+
+</div>
+</section>
+
+<section class="detail-more">
 
 <h2>Cast</h2>
 {% if item.cast %}
@@ -116,6 +137,8 @@
 {% else %}
     <p>No similar movies available.</p>
 {% endif %}
+
+</section>
 
 </article>
 {% endblock %}

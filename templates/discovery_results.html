@@ -1,0 +1,50 @@
+
+{% extends "base.html" %}
+{% block title %}Search Results - MatchIt{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='discovery.css') }}">
+
+<section class="discovery-page">
+    {% if search_type == "actor" %}
+    <h1>Movies Featuring {{ query }}</h1>
+    {% elif search_type == "director" %}
+    <h1>Movies Directed by {{ query }}</h1>
+    {% else %}
+    <h1>Search Results</h1>
+    {% endif %}
+
+    {% if error %}
+    <p class="discovery-error" role="alert">{{ error }}</p>
+    {% elif movies is defined %}
+    {% if movies %}
+    <div class="cards">
+        {% for movie in movies %}
+        <article class="card">
+            <a href="{{ url_for('item', item_id=movie.id) }}">
+                {% if movie.image %}
+                <img src="{{ movie.image }}" alt="{{ movie.title }} poster">
+                {% else %}
+                <p class="poster-placeholder">No poster available.</p>
+                {% endif %}
+                <div class="movie-info">
+                    <h3>{{ movie.title }}</h3>
+                    {% if movie.genres %}
+                    <p>{{ movie.genres | join(", ") }}</p>
+                    {% endif %}
+                    {% if movie.vote_average is defined and movie.vote_average is not none %}
+                    <p class="rating">{{ movie.vote_average | round(1) }}/10</p>
+                    {% else %}
+                    <p>Rating unavailable</p>
+                    {% endif %}
+                </div>
+            </a>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="discovery-empty" role="status">No movies found. Try another search.</p>
+    {% endif %}
+    {% endif %}
+</section>
+
+{% endblock %}

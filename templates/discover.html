@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Discover Movies - MatchIt{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='discovery.css') }}">
+
+<section class="discovery-page">
+    <p id="discovery-loading" role="status" hidden>Finding movies...</p>
+<div class="discovery-hero">
+<div>
+<h1>Discover <span>Movies</span></h1>
+<p>Find your next movie based on your favorite genre or your mood.</p>
+</div>
+<img src="{{ url_for('static', filename='images/hero_artwork_transparent_original_size.png') }}" alt="">
+</div>
+
+<section class="genre-section">
+<div class="section-heading">
+    <span class="section-icon" aria-hidden="true">🎬</span>
+    <div>
+        <h2>Browse by Genre</h2>
+        <p>Choose a genre to discover movies.</p>
+    </div>
+</div>
+    <form action="/discover/genre" method="get">
+
+        <div class="genre-options">
+
+            {% for genre in genres %}
+                <button type="submit"
+                        name="genre_id"
+                        value="{{ genre.id }}">
+                    {{ genre.name }}
+                </button>
+            {% endfor %}
+
+        </div>
+    </form>
+</section>
+
+<section class="mood-section">
+<div class="section-heading">
+    <span class="section-icon" aria-hidden="true">🎭</span>
+    <div>
+        <h2>Discover by Mood</h2>
+        <p>How are you feeling today? Find a movie that matches your mood.</p>
+    </div>
+</div>
+    <form action="/discover/mood" method="get">
+        <div class="mood-options">
+            <button type="submit" name="mood" value="happy">
+                <span class="mood-emoji" aria-hidden="true">😊</span> Happy
+            </button>
+            <button type="submit" name="mood" value="sad">
+                <span class="mood-emoji" aria-hidden="true">😢</span> Emotional
+            </button>
+            <button type="submit" name="mood" value="romantic">
+                <span class="mood-emoji" aria-hidden="true">❤️</span> Romantic
+            </button>
+            <button type="submit" name="mood" value="scary">
+                <span class="mood-emoji" aria-hidden="true">😱</span> Scary
+            </button>
+            <button type="submit" name="mood" value="exciting">
+                <span class="mood-emoji" aria-hidden="true">⚡</span> Adventurous
+            </button>
+            <button type="submit" name="mood" value="mind_bending">
+                <span class="mood-emoji" aria-hidden="true">🧠</span> Mind-Bending
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="discovery-results">
+    {% if error %}
+    <p class="discovery-error" role="alert">{{ error }}</p>
+    {% elif movies is defined %}
+    <h2>Discover Results</h2>
+    {% if movies %}
+    <div class="cards">
+        {% for movie in movies %}
+        <article class="card">
+            <a href="{{ url_for('item', item_id=movie.id) }}">
+                {% if movie.image %}
+                <img src="{{ movie.image }}" alt="{{ movie.title }} poster">
+                {% else %}
+                <p>No poster available.</p>
+                {% endif %}
+
+                <div class="movie-info">
+                    <h3>{{ movie.title }}</h3>
+                    {% if movie.genres %}
+                    <p>{{ movie.genres | join(", ") }}</p>
+                    {% endif %}
+                    {% if movie.vote_average is defined and movie.vote_average is not none %}
+                    <p class="rating">{{ movie.vote_average | round(1) }}/10</p>
+                    {% else %}
+                    <p>Rating unavailable</p>
+                    {% endif %}
+                </div>
+            </a>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="discovery-empty" role="status">No movies found. Try another genre or mood.</p>
+    {% endif %}
+    {% endif %}
+</section>
+
+</section>
+<script src="{{ url_for('static', filename='discovery.js') }}" defer></script>
+{% endblock %}

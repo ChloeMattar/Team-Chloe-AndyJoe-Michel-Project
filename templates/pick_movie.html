@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}
+{% block title %}Pick for Me - MatchIt{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='pick_movie.css') }}">
+
+<section class="pick-page">
+    <div class="pick-intro">
+        <h1>Pick for Me</h1>
+        <p>Can't decide what to watch? Let Match It choose for you!</p>
+    </div>
+
+    <section class="random-section" aria-labelledby="random-title">
+        <img src="{{ url_for('static', filename='images/dice_icon_badge.png') }}"
+             alt="" class="dice-icon-badge">
+
+        <h2 id="random-title">Random Movie Generator</h2>
+        <p>Not sure what to watch? Discover a surprise movie in one click!</p>
+
+        <form action="/random" method="get">
+            <button type="submit" class="random-button">Surprise Me!</button>
+        </form>
+
+        <div class="random-perks">
+            <span>No setup needed</span>
+            <span>Instant surprise</span>
+            <span>Explore movie details</span>
+        </div>
+    </section>
+</section>
+
+{% endblock %}

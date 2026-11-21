@@ -10,11 +10,14 @@
 
 <body>
 
-  <header class="nav">
+<header class="nav">
     <a class="brand1" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/MatchIt-Cinema-Emblem.png') }}" alt="MatchIt" width="100" ></a>
     <a class="brand2" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/TMDB-Logo-Long.png') }}" alt="MatchIt" width="200" ></a>
 
       <a href="{{ url_for('home') }}"><strong>Home</strong></a>
+      <a href="/preview-discover"><strong>Discover</strong></a>
+      <a href="/preview-recommendations"{% if request.path == "/preview-recommendations" %} class="active"{% endif %}><strong>Recommendations</strong></a>
+      <a href="/preview-pick-movie"{% if request.path == "/preview-pick-movie" or request.args.get("from_random") == "1" %} class="active"{% endif %}><strong>Pick for Me</strong></a>
 
       {% if current_user %}
         <a href="{{ url_for('favorites') }}"><strong>My Favorites</strong></a>
@@ -25,12 +28,32 @@
         <a href="{{ url_for('signup') }}"><strong>Sign up</strong></a>
       {% endif %}
 
-      <form class="search" action="{{ url_for('search') }}" method="get">
-        <input type="text" name="q" placeholder="Search...">
-        <button type="submit">Search</button>
-      </form>
+<details class="nav-search" id="navbar-search">
+    <summary class="nav-search-toggle">Search</summary>
 
-  </header>
+    <div class="nav-search-panel">
+        <h2>MATCH IT — Search</h2>
+
+        <div class="search-tabs" role="group" aria-label="Search category">
+            <button type="button" class="active" data-tab="movies" aria-pressed="true">Movies</button>
+            <button type="button" data-tab="actors" aria-pressed="false">Actors</button>
+            <button type="button" data-tab="directors" aria-pressed="false">Directors</button>
+        </div>
+
+        <form id="navbar-search-form" action="{{ url_for('search') }}" method="get">
+            <label for="navbar-search-query">Search movies, actors, or directors</label>
+            <div class="search-input-container">
+                <input type="search" id="navbar-search-query" name="q"
+                       placeholder="Search for a movie..." required>
+                <button type="submit">Search</button>
+            </div>
+        </form>
+
+        <p class="search-description">Switch between Movies, Actors, and Directors.</p>
+    </div>
+</details>
+
+</header>
 
   <main class="container">
     {% with messages = get_flashed_messages() %}
@@ -38,6 +61,8 @@
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+
+<script src="{{ url_for('static', filename='search.js') }}" defer></script>
 
 </body>
 

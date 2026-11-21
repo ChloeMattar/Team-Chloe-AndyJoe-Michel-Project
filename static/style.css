@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Raleway:wght@400;500;600;700&display=swap');
 
 /* ==============================
@@ -149,6 +148,14 @@ a {
 
 .nav > a:hover {
     color: var(--cyan);
+}
+
+/* Current page link, for example Pick for Me */
+.nav > a:not(.brand1):not(.brand2).active {
+    padding: 0.5rem 1.1rem;
+    background: var(--gradient);
+    border-radius: 25px;
+    color: #ffffff;
 }
 
 .nav .who {
@@ -452,16 +459,287 @@ button[type=submit]:hover {
    11. MOVIE DETAILS
 ============================== */
 
-.detail .hero {
-    max-width: 100%;
-    width: 100%;
-    border-radius: 16px;
-    margin: 1rem 0;
+/* Backdrop: big movie image on the right, faded into the page */
+.detail-backdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: -1;
+
+    width: 72%;
+    height: 880px;
+
+    /* fallback when the movie has no backdrop */
+    background-image: linear-gradient(
+        135deg,
+        rgba(18, 111, 229, 0.25),
+        rgba(146, 43, 238, 0.3)
+    );
+    background-size: cover;
+    background-position: center top;
+
+    /* the edges fade out, so there is no hard rectangle */
+    -webkit-mask-image: radial-gradient(
+        ellipse 80% 85% at 72% 38%,
+        #000 25%,
+        transparent 100%
+    );
+    mask-image: radial-gradient(
+        ellipse 80% 85% at 72% 38%,
+        #000 25%,
+        transparent 100%
+    );
 }
 
+/* Dark navy overlay: keeps the text readable */
+.detail-backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(8, 15, 32, 0.95) 0%,
+            rgba(8, 15, 32, 0.55) 45%,
+            rgba(8, 15, 32, 0.2) 100%
+        ),
+        linear-gradient(
+            0deg,
+            rgba(8, 15, 32, 0.6),
+            transparent 40%
+        );
+}
+
+/* Poster (left) and information (center) */
+.detail-main {
+    display: flex;
+    align-items: center;
+    gap: 2.2rem;
+
+    /* make this area as wide as the navbar (95% of the window) */
+    margin: 0 calc(50% - 47.5vw);
+    padding: 4.5rem 0.5rem 3rem;
+}
+
+.detail-poster {
+    flex: 0 0 280px;
+}
+
+.detail-poster img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+
+    border: 1px solid var(--purple);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.detail-poster p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 2 / 3;
+    margin: 0;
+
+    background: var(--surface);
+    border: 1px solid var(--purple);
+    border-radius: 16px;
+
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.detail-info {
+    flex: 1;
+    min-width: 0;
+    max-width: 540px;
+}
+
+/* Back */
+.back-pick-button {
+    display: inline-block;
+    margin-bottom: 1.2rem;
+    padding: 0.75rem 1.5rem;
+
+    background: var(--gradient);
+    color: #ffffff;
+    border-radius: 50px;
+
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: 0.25s;
+}
+
+.back-pick-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(146, 43, 238, 0.35);
+}
+
+.back-pick-button:focus-visible {
+    outline: 3px solid var(--cyan);
+    outline-offset: 3px;
+}
+
+/* Title */
+.detail-info h1 {
+    margin: 0 0 0.8rem;
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    line-height: 1.1;
+}
+
+/* Rating | year | runtime */
+.detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0;
+    margin: 0 0 1.2rem;
+
+    color: var(--text);
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.detail-meta span + span {
+    margin-left: 1.3rem;
+    padding-left: 1.3rem;
+    border-left: 2px solid var(--text-secondary);
+}
+
+/* Genre badges */
+.genre-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+}
+
+.genre-badge {
+    padding: 0.45rem 1.2rem;
+
+    background: linear-gradient(
+        110deg,
+        rgba(18, 111, 229, 0.3),
+        rgba(146, 43, 238, 0.3)
+    );
+    border-radius: 50px;
+
+    color: var(--text);
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* Description */
 .description {
     color: var(--text-secondary);
     line-height: 1.8;
+}
+
+.detail-info .description {
+    max-width: 500px;
+    margin: 0 0 1.6rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+/* Action buttons */
+.detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.detail-actions form {
+    margin: 0;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.4rem;
+
+    border: 1px solid transparent;
+    border-radius: 12px;
+
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(146, 43, 238, 0.35);
+}
+
+.action-btn:focus-visible {
+    outline: 3px solid var(--cyan);
+    outline-offset: 3px;
+}
+
+.btn-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.favorite-btn {
+    background: var(--gradient);
+}
+
+.remove-btn {
+    background: rgba(220, 53, 69, 0.2);
+    border-color: #dc3545;
+}
+
+.marathon-btn {
+    background: transparent;
+    border-color: rgba(190, 170, 255, 0.7);
+    color: var(--text);
+}
+
+/* Cast, trailers and similar movies stay below */
+.detail-more {
+    margin-top: 3rem;
+}
+
+.similar-movies {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.2rem;
+}
+
+.movie-card img {
+    display: block;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.movie-card a {
+    text-decoration: none;
+}
+
+.movie-card h3 {
+    margin: 0.6rem 0 0.2rem;
+    font-size: 1rem;
+}
+
+.movie-card p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
 }
 
 /* ==============================
@@ -577,6 +855,20 @@ footer {
         flex: 1 1 100%;
         margin-left: 0;
     }
+
+    .detail-backdrop {
+        width: 100%;
+        opacity: 0.5;
+    }
+
+    .detail-main {
+        gap: 1.5rem;
+        padding-top: 3rem;
+    }
+
+    .detail-poster {
+        flex-basis: 220px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -605,5 +897,297 @@ footer {
             minmax(145px, 1fr)
         );
         gap: 0.8rem;
+    }
+
+    .detail-backdrop {
+        height: 560px;
+        opacity: 0.35;
+    }
+
+    .detail-main {
+        flex-direction: column;
+    }
+
+    .detail-poster {
+        flex: none;
+        width: 200px;
+    }
+
+    .detail-info {
+        width: 100%;
+    }
+
+    .detail-main {
+        padding-top: 2rem;
+    }
+
+    .back-pick-button {
+        font-size: 0.95rem;
+        padding: 0.65rem 1.3rem;
+    }
+
+    .detail-meta {
+        font-size: 1rem;
+    }
+
+    .detail-meta span + span {
+        margin-left: 1rem;
+        padding-left: 1rem;
+    }
+
+    .genre-badge {
+        font-size: 0.85rem;
+    }
+
+    .detail-info .description {
+        font-size: 1rem;
+    }
+
+    .action-btn {
+        font-size: 0.95rem;
+        padding: 0.75rem 1.1rem;
+    }
+}
+
+
+/* ==============================
+   NAVBAR SEARCH DROPDOWN
+============================== */
+
+.nav-search {
+    margin-left: auto;
+}
+
+/* SEARCH BUTTON */
+
+.nav-search-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.3rem;
+
+    background: var(--gradient);
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    list-style: none;
+}
+
+.nav-search-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.nav-search-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(146, 43, 238, 0.35);
+}
+
+/* DROPDOWN PANEL */
+
+.nav-search-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+
+    width: 600px;
+    max-width: calc(100vw - 24px);
+    padding: 2rem;
+
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+
+    z-index: 1100;
+}
+
+.nav-search-panel h2 {
+    font-family: var(--font-heading);
+    color: var(--text);
+    font-size: 1.5rem;
+    margin: 0 0 1.5rem;
+}
+
+/* SEARCH CATEGORIES */
+
+.nav-search-panel .search-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+}
+
+.nav-search-panel .search-tabs button {
+    padding: 0.8rem;
+    background: var(--surface-hover);
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 25px;
+
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nav-search-panel .search-tabs button.active {
+    background: var(--gradient);
+    color: #ffffff;
+}
+
+/* SEARCH INPUT */
+
+.nav-search-panel label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.nav-search-panel .search-input-container {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.nav-search-panel .search-input-container input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.9rem 1rem;
+
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 25px;
+
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+}
+
+.nav-search-panel .search-input-container button {
+    padding: 0.9rem 1.2rem;
+    white-space: nowrap;
+}
+
+.nav-search-panel .search-description {
+    margin: 1rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* KEYBOARD ACCESSIBILITY */
+
+.nav-search-toggle:focus-visible,
+.nav-search-panel button:focus-visible,
+.nav-search-panel input:focus-visible {
+    outline: 3px solid var(--cyan);
+    outline-offset: 3px;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+    .nav-search-panel {
+        width: calc(100vw - 24px);
+        right: 0;
+        padding: 1.2rem;
+    }
+
+    .nav-search-panel .search-tabs {
+        gap: 0.4rem;
+    }
+
+    .nav-search-panel .search-tabs button {
+        padding: 0.7rem 0.3rem;
+        font-size: 0.75rem;
+    }
+
+    .nav-search-panel .search-input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* SMALLER NAVBAR SEARCH BUTTON */
+
+.nav-search-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.7rem 1.1rem;
+    font-size: 0.85rem;
+}
+
+/* DROPDOWN ARROW */
+
+.nav-search-toggle::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+}
+
+.nav-search[open] .nav-search-toggle::after {
+    transform: rotate(225deg);
+}
+
+/* SMALLER DROPDOWN PANEL */
+
+.nav-search-panel {
+    width: 510px;
+    padding: 1.4rem;
+    border-radius: 18px;
+}
+
+.nav-search-panel h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* SMALLER CATEGORY BUTTONS */
+
+.nav-search-panel .search-tabs {
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.nav-search-panel .search-tabs button {
+    padding: 0.65rem;
+    font-size: 0.8rem;
+}
+
+/* SMALLER SEARCH INPUT AND BUTTON */
+
+.nav-search-panel .search-input-container input {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.85rem;
+}
+
+.nav-search-panel .search-input-container button {
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+}
+
+.nav-search-panel .search-description {
+    font-size: 0.8rem;
+    margin-top: 0.8rem;
+}
+/* The navbar has more links now, so it wraps a little earlier */
+@media (max-width: 1100px) {
+    .nav {
+        flex-wrap: wrap;
     }
 }

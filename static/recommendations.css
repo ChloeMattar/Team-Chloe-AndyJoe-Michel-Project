@@ -1,0 +1,329 @@
+/* ==============================
+   RECOMMENDATIONS PAGE
+============================== */
+
+/* ---------- 1. PAGE ---------- */
+
+.rec-page {
+    max-width: 1010px;
+    margin: 0 auto;
+}
+
+/* Film strips: decorations in the corners of the screen, behind the content */
+.rec-filmstrip {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.rec-filmstrip-left {
+    top: 90px;
+    left: 0;
+    width: 230px;
+}
+
+.rec-filmstrip-right {
+    right: 0;
+    bottom: 0;
+    width: 230px;
+}
+
+/* ---------- 2. HERO ---------- */
+
+.rec-hero {
+    text-align: center;
+}
+
+.rec-hero img {
+    display: block;
+    width: 240px;
+    max-width: 60%;
+    height: auto;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 25px rgba(146, 43, 238, 0.5));
+}
+
+.rec-hero h1 {
+    margin: 0.2rem 0 0.5rem;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    line-height: 1.1;
+}
+
+.rec-hero h1 span {
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+/* Subtitle with a thin purple line on each side */
+.rec-hero p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+}
+
+.rec-hero p::before,
+.rec-hero p::after {
+    content: "";
+    width: 90px;
+    height: 2px;
+}
+
+.rec-hero p::before {
+    background: linear-gradient(90deg, transparent, var(--purple));
+}
+
+.rec-hero p::after {
+    background: linear-gradient(90deg, var(--purple), transparent);
+}
+
+/* ---------- 3. THREE CARDS ---------- */
+
+.rec-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin: 1.6rem 0 1.4rem;
+}
+
+.rec-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 1rem 1.3rem;
+    text-align: center;
+
+    /* the card color is clipped to the padding, the gradient shows as the border */
+    border: 2px solid transparent;
+    border-radius: 22px;
+    background:
+        linear-gradient(145deg, rgba(18, 111, 229, 0.25), transparent 50%) padding-box,
+        linear-gradient(325deg, rgba(146, 43, 238, 0.25), transparent 50%) padding-box,
+        linear-gradient(var(--navy), var(--navy)) padding-box,
+        var(--gradient) border-box;
+    box-shadow: 0 0 25px rgba(18, 111, 229, 0.25), var(--shadow);
+
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.rec-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 30px rgba(146, 43, 238, 0.45), var(--shadow);
+}
+
+/* Illustration with a soft purple glow behind it */
+.rec-card > img {
+    width: 100%;
+    max-width: 270px;
+    height: 120px;
+    object-fit: contain;
+    background: radial-gradient(ellipse at center, rgba(146, 43, 238, 0.35), transparent 65%);
+}
+
+.rec-card h2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 0.5rem 0 0.4rem;
+
+    /* reset the gradient text that style.css gives to every h2 */
+    background: none;
+    color: var(--text);
+    font-size: 1.15rem;
+}
+
+/* Small purple icon badge beside the title */
+.rec-card h2 img {
+    width: 34px;
+    height: 34px;
+    padding: 7px;
+    background: var(--purple);
+    border-radius: 10px;
+}
+
+.rec-card p {
+    flex: 1;
+    max-width: 260px;
+    margin: 0 0 1rem;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.45;
+}
+
+.rec-soon {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    padding: 0.2rem 0.7rem;
+
+    background: rgba(146, 43, 238, 0.25);
+    border: 1px solid var(--purple);
+    border-radius: 50px;
+
+    color: var(--text);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ---------- 4. GRADIENT BUTTONS ---------- */
+
+.rec-button {
+    display: inline-block;
+    padding: 0.75rem 1.6rem;
+
+    background: var(--gradient);
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 6px 18px rgba(146, 43, 238, 0.35);
+
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.rec-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(146, 43, 238, 0.55);
+}
+
+.rec-button:focus-visible {
+    outline: 3px solid var(--cyan);
+    outline-offset: 3px;
+}
+
+/* Features that are not connected yet */
+.rec-button:disabled {
+    opacity: 0.55;
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+}
+
+/* ---------- 5. BOTTOM LABELS ---------- */
+
+.rec-features {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.rec-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+
+    color: var(--text);
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.rec-features li + li {
+    margin-left: 3rem;
+    padding-left: 3rem;
+    border-left: 1px solid var(--line);
+}
+
+.rec-features img {
+    width: 29px;
+    height: 29px;
+}
+
+/* ---------- 6. RESPONSIVE ---------- */
+
+/* Tablet: two cards per row, the last one centered */
+@media (max-width: 900px) {
+    .rec-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .rec-card:last-child {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: calc(50% - 0.75rem);
+    }
+
+    .rec-features li + li {
+        margin-left: 1.5rem;
+        padding-left: 1.5rem;
+    }
+}
+
+/* Mobile: one card per row */
+@media (max-width: 600px) {
+    .rec-filmstrip {
+        display: none;
+    }
+
+    .rec-hero img {
+        width: 200px;
+    }
+
+    .rec-hero p {
+        font-size: 0.95rem;
+    }
+
+    .rec-hero p::before,
+    .rec-hero p::after {
+        width: 30px;
+    }
+
+    .rec-cards {
+        grid-template-columns: 1fr;
+        margin: 1.5rem 0;
+    }
+
+    .rec-card:last-child {
+        grid-column: auto;
+        justify-self: stretch;
+        width: auto;
+    }
+
+    .rec-card > img {
+        height: 105px;
+    }
+
+    .rec-features {
+        flex-direction: column;
+        align-items: flex-start;
+        width: fit-content;
+        margin: 0 auto;
+    }
+
+    .rec-features li + li {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rec-card,
+    .rec-button {
+        transition: none;
+    }
+
+    .rec-card:hover,
+    .rec-button:hover {
+        transform: none;
+    }
+}

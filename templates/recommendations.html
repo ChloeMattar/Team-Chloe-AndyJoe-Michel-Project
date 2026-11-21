@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Recommendations - MatchIt{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='recommendations.css') }}">
+
+<img class="rec-filmstrip rec-filmstrip-left" src="{{ url_for('static', filename='images/rec-filmstrip-left.png') }}" alt="">
+<img class="rec-filmstrip rec-filmstrip-right" src="{{ url_for('static', filename='images/rec-filmstrip-right.png') }}" alt="">
+
+<section class="rec-page">
+
+<header class="rec-hero">
+<img src="{{ url_for('static', filename='images/rec-hero.png') }}" alt="">
+<h1>Find Your <span>Movie Match</span></h1>
+<p>Personalized recommendations based on what you love.</p>
+</header>
+
+<section class="rec-cards" aria-label="Recommendation options">
+
+<article class="rec-card">
+<img src="{{ url_for('static', filename='images/rec-mood.png') }}" alt="">
+<h2><img src="{{ url_for('static', filename='images/rec-icon-mood.png') }}" alt="">Recommend by Mood</h2>
+<p>Find movies that match how you're feeling today.</p>
+{# This button reuses the existing Discover by Mood section #}
+<a class="rec-button" href="/preview-discover#mood">Choose a Mood →</a>
+</article>
+
+<article class="rec-card">
+<span class="rec-soon">Coming soon</span>
+<img src="{{ url_for('static', filename='images/rec-group.png') }}" alt="">
+<h2><img src="{{ url_for('static', filename='images/rec-icon-group.png') }}" alt="">Recommend for a Group</h2>
+<p>Combine everyone's preferences to find a movie together.</p>
+{# Disabled until the backend for group recommendations exists #}
+<button class="rec-button" type="button" disabled>Set Group Preferences →</button>
+</article>
+
+<article class="rec-card">
+<span class="rec-soon">Coming soon</span>
+<img src="{{ url_for('static', filename='images/rec-movies.png') }}" alt="">
+<h2><img src="{{ url_for('static', filename='images/rec-icon-movies.png') }}" alt="">Recommend by Movies</h2>
+<p>Choose movies you love and discover similar recommendations.</p>
+{# Disabled until movie selection and /recommendations/<movie_id> exist #}
+<button class="rec-button" type="button" disabled>Select Movies →</button>
+</article>
+
+</section>
+
+<ul class="rec-features">
+<li><img src="{{ url_for('static', filename='images/icon-personalized-picks.png') }}" alt="">Personalized Picks</li>
+<li><img src="{{ url_for('static', filename='images/icon-for-any-occasion.png') }}" alt="">For Any Occasion</li>
+<li><img src="{{ url_for('static', filename='images/icon-hidden-gems.png') }}" alt="">Discover Hidden Gems</li>
+</ul>
+
+</section>
+{% endblock %}
