@@ -16,7 +16,7 @@ HEADERS = {
 def tmdb_get(endpoint, params=None):
     """Send a GET request to TMDb and return its JSON data."""
     try:
-        r = requests.get(BASE_URL + endpoint,
+        r = requests.get(BASE_URL + endpoint, 
     headers=HEADERS,
     params=params,
     timeout=TIMEOUT
