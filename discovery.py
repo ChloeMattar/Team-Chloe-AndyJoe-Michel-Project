@@ -20,8 +20,8 @@ def format_movie(movie_details, genre_map): # made for reusing it
 
     return movie_dict
 
-def discover_by_genre(genre_id): # Send a GET request to TMDb and return its movies by genre.
-    params = {"with_genres": genre_id}
+def discover_by_genre(genre_id,page=1): # Send a GET request to TMDb and return its movies by genre.
+    params = {"with_genres": genre_id, "page": page}
     data = tmdb_get("/discover/movie", params)
     if data is None:
         return []
@@ -38,21 +38,33 @@ mood_genres = {
     "romantic": [10749],
     "scary": [27, 53],
     "adventurous": [28, 12],
-    "mind-bending": [9648, 878]
+    "mind_bending": [9648, 878]
 }
 
-def discover_by_mood(mood): # Send a request and return movies based on user's mood
+def discover_by_mood(mood, page=1):
     mood = mood.lower()
     genre_ids = mood_genres.get(mood)
     if genre_ids is None:
         return []
-    genres = [] # add multiple genres based on 1 mood
+    genres = []
+    seen_ids = set()
     for genre_id in genre_ids:
-        genres.extend(discover_by_genre(genre_id))
+        movies = discover_by_genre(genre_id, page)
+        for movie in movies:
+            if movie["id"] not in seen_ids:
+                genres.append(movie)
+                seen_ids.add(movie["id"])
     return genres
 
 def get_random_movie():
-    data = tmdb_get("/discover/movie") # no parameter because the user will not enter anything
+    data = tmdb_get("/discover/movie")
+    if data is None:
+        return None
+    total_pages = data.get("total_pages", 0)
+    if total_pages == 0:
+        return None
+    random_page = random.randint(1, min(total_pages, 500))
+    data = tmdb_get("/discover/movie", {"page": random_page})
     if data is None:
         return None
     results = data.get("results", [])
@@ -83,17 +95,45 @@ def search_person(name): # made for reusability in actor and director
     return results
 
 def search_actor(name):
-    results = search_person(name) # reuse of search_person instead of duplicating the code
-    actors = []
+    results = search_person(name)
+    movies = []
+    seen_ids = set()
+    genre_map = get_genre_map()
     for actor in results:
-        if actor.get("known_for_department") == "Acting": # gives only actors from persons
-            actors.append(actor)
-    return actors
+        if actor.get("known_for_department") == "Acting":
+            actor_id = actor.get("id")
+            if actor_id is None:
+                continue
+            data = tmdb_get(f"/person/{actor_id}/movie_credits", None)
+            if data is None:
+                continue
+            for movie in data.get("cast", []):
+                movie_id = movie.get("id")
+                if movie_id is not None and movie_id not in seen_ids:
+                    movies.append(format_movie(movie, genre_map))
+                    seen_ids.add(movie_id)
+    return movies
 
 def search_director(name):
     results = search_person(name)
-    directors = []
+    movies = []
+    seen_ids = set()
+    genre_map = get_genre_map()
     for director in results:
-        if director.get("known_for_department") == "Directing": # gives only directors from persons
-            directors.append(director)
-    return directors
+        if director.get("known_for_department") == "Directing":
+            director_id = director.get("id")
+            if director_id is None:
+                continue
+            data = tmdb_get(f"/person/{director_id}/movie_credits", None)
+            if data is None:
+                continue
+            for movie in data.get("crew", []):
+                if movie.get("job") == "Director":
+                    movie_id = movie.get("id")
+                    if movie_id is not None and movie_id not in seen_ids:
+                        movies.append(format_movie(movie, genre_map))
+                        seen_ids.add(movie_id)
+    return movies
+
+
+

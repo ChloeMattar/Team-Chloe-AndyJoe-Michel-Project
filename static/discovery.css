@@ -235,7 +235,7 @@
 .mood-options button[value="romantic"] { --mood: 255, 92, 138; }
 .mood-options button[value="scary"] { --mood: 157, 107, 255; }
 .mood-options button[value="exciting"] { --mood: 255, 138, 61; }
-.mood-options button[value="mind_bending"] { --mood: 46, 230, 208; }
+.mood-options button[value=""] { --mood: 46, 230, 208; }
 
 /* Emoji inside a small glowing circle */
 .mood-emoji {
