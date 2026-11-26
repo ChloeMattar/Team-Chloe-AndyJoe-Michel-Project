@@ -19,7 +19,7 @@
 <div class="detail-info">
 
 {% if request.args.get("from_random") == "1" %}
-<a href="/preview-pick-movie" class="back-pick-button">← Back</a>
+<a href="{{ url_for('discovery.pick_movie') }}" class="back-pick-button">← Back</a>
 {% endif %}
 
 <h1>{{ item.title }}</h1>

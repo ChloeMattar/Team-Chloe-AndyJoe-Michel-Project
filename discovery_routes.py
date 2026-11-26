@@ -1,6 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, request,render_template, redirect, url_for
 from discovery_validators import validate_genre_id, validate_mood, validate_person_name, validate_movie_id,validate_page
-
+from api_client import get_genre_map
+from discovery import discover_by_genre, discover_by_mood, search_actor as api_search_actor, search_director as api_search_director, get_random_movie, get_recommendations
+import api_client
 discovery_bp = Blueprint("discovery", __name__)
 
 @discovery_bp.route("/discover/genre")
@@ -12,7 +14,8 @@ def discover_genre():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else: 
-        return f"Genre ID: {genre_id} Page: {page}"
+        movies = discover_by_genre(genre_id, (int(page)))
+        return render_template("discovery_results.html", movies=movies, page=int(page), genre_id=genre_id)     
 
 @discovery_bp.route("/discover/mood")
 def discover_mood():
@@ -23,7 +26,8 @@ def discover_mood():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else:
-        return f"Mood: {mood} Page: {page}"
+        movies = discover_by_mood(mood, (int(page)))
+        return render_template("discovery_results.html", movies=movies, page=int(page), mood=mood)
 
 @discovery_bp.route("/search/actor")
 def search_actor():
@@ -34,7 +38,8 @@ def search_actor():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else:
-        return f"Name: {name} Page: {page}"
+        movies = api_search_actor(name)
+        return render_template("discovery_results.html", movies=movies)
 
 @discovery_bp.route("/search/director")
 def search_director():
@@ -45,20 +50,43 @@ def search_director():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else:
-        return f"Name: {name} Page: {page}"
+        movies = api_search_director(name)
+        return render_template("discovery_results.html", movies=movies)
 
 
 @discovery_bp.route("/random")
 def random_movie (): 
-    return f"Random movie route works!"
+    movie = get_random_movie ()
+    if movie is None:
+        return f"No movie was selected", 503
+    else:
+        return redirect(url_for("item", item_id=movie["id"], from_random=1))
 
 @discovery_bp.route("/recommendations/<movie_id>")
 def get_movie_recommendations(movie_id):
-    if (not validate_movie_id(movie_id)):
-        return f"Invalid Movie ID", 400
+    if not validate_movie_id(movie_id):
+        return "Invalid Movie ID", 400
     else:
-        return f"Recommendations for movie ID: {movie_id}"
+        movies = get_recommendations(movie_id)
+        return render_template("discovery_results.html", movies=movies, search_type="recommendations")
+
+@discovery_bp.route("/recommendations")
+def recommendations_page():
+    return render_template("recommendations.html")
 
 @discovery_bp.route("/discover")
 def discover_page (): 
-    return "Discover page works!"
+    genres = get_genre_map()
+    return render_template("discover.html", genres=genres)
+
+@discovery_bp.route("/pick-movie")
+def pick_movie():
+    return render_template("pick_movie.html")
+
+@discovery_bp.route("/recommendations/select")
+def select_recommendation_movie():
+    query = request.args.get("q", "").strip()
+    movies = []
+    if query:
+        movies = api_client.search(query)
+    return render_template("select_movie.html", movies=movies, query=query)

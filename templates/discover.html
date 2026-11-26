@@ -24,12 +24,11 @@
     <form action="/discover/genre" method="get">
 
         <div class="genre-options">
-
-            {% for genre in genres %}
+            {% for genre_id, genre_name in genres.items() %}
                 <button type="submit"
                         name="genre_id"
-                        value="{{ genre.id }}">
-                    {{ genre.name }}
+                        value="{{ genre_id }}">
+                    {{ genre_name }}
                 </button>
             {% endfor %}
 
@@ -50,7 +49,7 @@
             <button type="submit" name="mood" value="happy">
                 <span class="mood-emoji" aria-hidden="true">😊</span> Happy
             </button>
-            <button type="submit" name="mood" value="sad">
+            <button type="submit" name="mood" value="emotional">
                 <span class="mood-emoji" aria-hidden="true">😢</span> Emotional
             </button>
             <button type="submit" name="mood" value="romantic">
@@ -59,7 +58,7 @@
             <button type="submit" name="mood" value="scary">
                 <span class="mood-emoji" aria-hidden="true">😱</span> Scary
             </button>
-            <button type="submit" name="mood" value="exciting">
+            <button type="submit" name="mood" value="adventurous">
                 <span class="mood-emoji" aria-hidden="true">⚡</span> Adventurous
             </button>
             <button type="submit" name="mood" value="mind_bending">

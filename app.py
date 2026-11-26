@@ -9,6 +9,7 @@ Run locally:   flask run --debug    ->   http://127.0.0.1:5000
 """
 import os
 from functools import wraps
+from discovery_routes import discovery_bp
 
 from flask import (Flask, render_template, request, redirect, url_for,
                    session, flash, abort)
@@ -23,6 +24,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+app.register_blueprint(discovery_bp)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
 

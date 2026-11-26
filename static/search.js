@@ -11,12 +11,12 @@ const searchTypes = {
         placeholder: "Search for a movie..."
     },
     actors: {
-        action: "/discover/actor",
+        action: "/search/actor",
         name: "name",
         placeholder: "Search for an actor..."
     },
     directors: {
-        action: "/discover/director",
+        action: "/search/director",
         name: "name",
         placeholder: "Search for a director..."
     }

@@ -15,9 +15,9 @@
     <a class="brand2" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/TMDB-Logo-Long.png') }}" alt="MatchIt" width="200" ></a>
 
       <a href="{{ url_for('home') }}"><strong>Home</strong></a>
-      <a href="/preview-discover"><strong>Discover</strong></a>
-      <a href="/preview-recommendations"{% if request.path == "/preview-recommendations" %} class="active"{% endif %}><strong>Recommendations</strong></a>
-      <a href="/preview-pick-movie"{% if request.path == "/preview-pick-movie" or request.args.get("from_random") == "1" %} class="active"{% endif %}><strong>Pick for Me</strong></a>
+      <a href="{{ url_for('discovery.discover_page')}}"><strong>Discover</strong></a>
+      <a href="{{ url_for('discovery.recommendations_page') }}" {% if request.path == "/recommendations" %} class="active"{% endif %}><strong>Recommendations</strong></a>      
+      <a href="{{ url_for('discovery.pick_movie') }}"{% if request.path == "/pick-movie" or request.args.get("from_random") == "1" %} class="active"{% endif %}><strong>Pick for Me</strong></a>     
 
       {% if current_user %}
         <a href="{{ url_for('favorites') }}"><strong>My Favorites</strong></a>

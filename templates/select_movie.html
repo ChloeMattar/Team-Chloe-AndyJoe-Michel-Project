@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Select a Movie - MatchIt{% endblock %}
+{% block content %}
+<section class="discovery-page">
+    <h1>Select a Movie</h1>
+    <p>Search for a movie you love to discover similar movies.</p>
+    <form method="get">
+        <label for="movie-query">Movie Title</label>
+        <input type="search"
+               id="movie-query"
+               name="q"
+               placeholder="Enter a movie title..."
+               value="{{ query }}"
+               required>
+        <button type="submit">Search</button>
+    </form>
+    <div class="movie-results">
+        {% for movie in movies %}
+            <article class="card">
+                <a href="{{ url_for('discovery.get_movie_recommendations', movie_id=movie.id) }}">
+                    {% if movie.image %}
+                        <img src="{{ movie.image }}" alt="{{ movie.title }} poster">
+                    {% else %}
+                        <p>No poster available.</p>
+                    {% endif %}
+                    <div class="movie-info">
+                        <h3>{{ movie.title }}</h3>
+                        <p>{{ movie.release_date }}</p>
+                    </div>
+                </a>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
