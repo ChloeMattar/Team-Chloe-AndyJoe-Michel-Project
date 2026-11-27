@@ -4,7 +4,7 @@
 <h1>{{ marathon.title }}</h1>
 <a href="{{ url_for('marathons') }}">Back to My Marathons</a>
 
-{% if movies %} {# Display movies inside the marathon #}
+{% if movies %} {# Display movies inside the marathon.#}
   {% for movie in movies %}
     <article>
       <a href="{{ url_for('item', item_id=movie.id) }}">
