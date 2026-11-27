@@ -20,16 +20,28 @@ def format_movie(movie_details, genre_map): # made for reusing it
 
     return movie_dict
 
-def discover_by_genre(genre_id,page=1): # Send a GET request to TMDb and return its movies by genre.
+def discover_by_genre(genre_id, page=1, include_pagination=False):
+    # Send a GET request to TMDb with the genre and page number
     params = {"with_genres": genre_id, "page": page}
     data = tmdb_get("/discover/movie", params)
+    # Handle API request failures
     if data is None:
+        if include_pagination:
+            return [], None
         return []
+    # Extract movie results and retrieve genre names
     results = data.get("results", [])
     genre_map = get_genre_map()
     movies = []
+    # Format movies using the existing reusable function
     for movie_details in results:
-        movies.append(format_movie(movie_details, genre_map)) # access reusable function
+        movies.append(format_movie(movie_details, genre_map))
+    # Get the total pages without exceeding TMDb's limit
+    total_pages = min(data.get("total_pages", 0), 500)
+    # Return movies and pagination information when requested
+    if include_pagination:
+        return movies, total_pages
+    # Preserve the original return format
     return movies
 
 mood_genres = {
@@ -41,19 +53,38 @@ mood_genres = {
     "mind_bending": [9648, 878]
 }
 
-def discover_by_mood(mood, page=1):
+def discover_by_mood(mood, page=1, include_pagination=False):
     mood = mood.lower()
     genre_ids = mood_genres.get(mood)
+    # Handle invalid moods
     if genre_ids is None:
+        if include_pagination:
+            return [], 0
         return []
-    genres = []
-    seen_ids = set()
-    for genre_id in genre_ids:
-        movies = discover_by_genre(genre_id, page)
+    genres = [] #Stores the retrieved movies
+    seen_ids = set() #Stores movie IDs to prevent duplicates on the current page
+    total_pages = 0 #Stores the highest number of accessible pages
+    # Retrieve movies from each genre associated with the mood
+    for genre_id in genre_ids:  #loop through every genre associated with the selected mood.
+        if include_pagination:
+            movies, genre_total_pages = discover_by_genre(genre_id, page, include_pagination=True)
+            # Handle API request failures
+            if genre_total_pages is None:
+                total_pages = None
+            # Keep the highest number of pages among the genres
+            elif total_pages is not None:
+                total_pages = max(total_pages, genre_total_pages)
+        else:
+            movies = discover_by_genre(genre_id, page)
+        # Prevent duplicate movies on the same page
         for movie in movies:
             if movie["id"] not in seen_ids:
                 genres.append(movie)
                 seen_ids.add(movie["id"])
+    # Return movies and pagination information if requested
+    if include_pagination:
+        return genres, total_pages
+    # Preserve the original return format
     return genres
 
 def get_random_movie():
@@ -86,39 +117,70 @@ def get_recommendations(movie_id):
     return recommended_movie
 
 # Search by actor - director
-def search_person(name): # made for reusability in actor and director
+def search_person(name, include_error=False): # made for reusability in actor and director
     params = {"query": name}
-    data = tmdb_get("/search/person", params) # requests all persons from tmdb and give the results as user entered
+    data = tmdb_get("/search/person", params)
+    # Distinguish API failures from empty search results
     if data is None:
+        if include_error:
+            return None
         return []
     results = data.get("results", [])
     return results
 
-def search_actor(name):
-    results = search_person(name)
+def search_actor(name, page=1, include_pagination=False):
+    results = search_person(name, include_error=True)
+    # Handle person search API failure
+    if results is None:
+        if include_pagination:
+            return [], None
+        return []
     movies = []
     seen_ids = set()
     genre_map = get_genre_map()
+    api_failed = False
     for actor in results:
         if actor.get("known_for_department") == "Acting":
             actor_id = actor.get("id")
             if actor_id is None:
                 continue
             data = tmdb_get(f"/person/{actor_id}/movie_credits", None)
+            # Record the API failure and continue with other actors
             if data is None:
+                api_failed = True
                 continue
             for movie in data.get("cast", []):
                 movie_id = movie.get("id")
                 if movie_id is not None and movie_id not in seen_ids:
                     movies.append(format_movie(movie, genre_map))
                     seen_ids.add(movie_id)
+    # Apply pagination after removing duplicate movies
+    if include_pagination:
+        movies_per_page = 20
+        # Calculate the total number of pages
+        total_pages = (len(movies) + movies_per_page - 1) // movies_per_page
+        # Calculate the start and end positions of the requested page
+        start = (page - 1) * movies_per_page
+        end = start + movies_per_page
+        # Return only the movies on the requested page and total pages
+        # Pagination information is unreliable if an API request failed
+        if api_failed:
+            return movies[start:end], None
+        return movies[start:end], total_pages
+    # Preserve the original return format
     return movies
 
-def search_director(name):
-    results = search_person(name)
+def search_director(name, page=1, include_pagination=False):
+    results = search_person(name, include_error=True)
+    # Handle person search API failure
+    if results is None:
+        if include_pagination:
+            return [], None
+        return []
     movies = []
     seen_ids = set()
     genre_map = get_genre_map()
+    api_failed = False
     for director in results:
         if director.get("known_for_department") == "Directing":
             director_id = director.get("id")
@@ -126,6 +188,7 @@ def search_director(name):
                 continue
             data = tmdb_get(f"/person/{director_id}/movie_credits", None)
             if data is None:
+                api_failed = True
                 continue
             for movie in data.get("crew", []):
                 if movie.get("job") == "Director":
@@ -133,6 +196,20 @@ def search_director(name):
                     if movie_id is not None and movie_id not in seen_ids:
                         movies.append(format_movie(movie, genre_map))
                         seen_ids.add(movie_id)
+    # Apply pagination after removing duplicate movies
+    if include_pagination:
+        movies_per_page = 20
+        # Calculate the total number of pages
+        total_pages = (len(movies) + movies_per_page - 1) // movies_per_page
+        # Calculate the start and end positions of the requested page
+        start = (page - 1) * movies_per_page
+        end = start + movies_per_page
+        # Return movies from the requested page and total pages
+        # Pagination information is unreliable if an API request failed
+        if api_failed:
+            return movies[start:end], None
+        return movies[start:end], total_pages
+    # Preserve the original return format
     return movies
 
 

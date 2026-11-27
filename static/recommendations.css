@@ -86,9 +86,10 @@
 
 .rec-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
-    margin: 1.6rem 0 1.4rem;
+    max-width: 700px;
+    margin: 1.6rem auto 1.4rem;
 }
 
 .rec-card {
@@ -254,12 +255,6 @@
 @media (max-width: 900px) {
     .rec-cards {
         grid-template-columns: repeat(2, 1fr);
-    }
-
-    .rec-card:last-child {
-        grid-column: 1 / -1;
-        justify-self: center;
-        width: calc(50% - 0.75rem);
     }
 
     .rec-features li + li {

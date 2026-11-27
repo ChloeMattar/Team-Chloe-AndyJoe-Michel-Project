@@ -14,8 +14,14 @@ def discover_genre():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else: 
-        movies = discover_by_genre(genre_id, (int(page)))
-        return render_template("discovery_results.html", movies=movies, page=int(page), genre_id=genre_id)     
+        # Retrieve movies and pagination information
+        movies, total_pages = discover_by_genre(genre_id, int(page), include_pagination=True)
+        error = None
+        # Handle TMDb API request failure
+        if total_pages is None:
+            error = "Unable to retrieve movies. Please try again later."
+        # Pass the results, pagination and error message to the template
+        return render_template("discovery_results.html", movies=movies, page=int(page), genre_id=genre_id, total_pages=total_pages, error=error)
 
 @discovery_bp.route("/discover/mood")
 def discover_mood():
@@ -26,8 +32,17 @@ def discover_mood():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else:
-        movies = discover_by_mood(mood, (int(page)))
-        return render_template("discovery_results.html", movies=movies, page=int(page), mood=mood)
+        # Retrieve mood movies and pagination information
+        movies, total_pages = discover_by_mood(mood, int(page), include_pagination=True)
+        error = None
+        # Handle complete or partial API request failures
+        if total_pages is None:
+            if movies:
+                error = "Some movies could not be retrieved. Please try again later."
+            else:
+                error = "Unable to retrieve movies. Please try again later."
+        # Pass the results, pagination and error message to the template
+        return render_template("discovery_results.html", movies=movies, page=int(page), mood=mood, total_pages=total_pages, error=error)
 
 @discovery_bp.route("/search/actor")
 def search_actor():
@@ -38,8 +53,17 @@ def search_actor():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else:
-        movies = api_search_actor(name)
-        return render_template("discovery_results.html", movies=movies)
+        # Retrieve actor movies and pagination information
+        movies, total_pages = api_search_actor(name, int(page), include_pagination=True)
+        error = None
+        # Handle complete or partial API request failures
+        if total_pages is None:
+            if movies:
+                error = "Some movies could not be retrieved. Please try again later."
+            else:
+                error = "Unable to retrieve movies. Please try again later."
+        # Pass the results, pagination and error message to the template
+        return render_template("discovery_results.html", movies=movies, page=int(page), total_pages=total_pages, search_type="actor", query=name, error=error)
 
 @discovery_bp.route("/search/director")
 def search_director():
@@ -50,8 +74,17 @@ def search_director():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else:
-        movies = api_search_director(name)
-        return render_template("discovery_results.html", movies=movies)
+        # Retrieve director movies and pagination information
+        movies, total_pages = api_search_director(name, int(page), include_pagination=True)
+        error = None
+        # Handle complete or partial API request failures
+        if total_pages is None:
+            if movies:
+                error = "Some movies could not be retrieved. Please try again later."
+            else:
+                error = "Unable to retrieve movies. Please try again later."
+        # Pass the results, pagination and error message to the template
+        return render_template("discovery_results.html", movies=movies, page=int(page), total_pages=total_pages, search_type="director", query=name, error=error)
 
 
 @discovery_bp.route("/random")

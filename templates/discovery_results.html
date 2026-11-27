@@ -12,9 +12,11 @@
     {% else %}
         <h1>Search Results</h1>
     {% endif %}
-    {% if error %}
-        <p class="discovery-error" role="alert">{{ error }}</p>
-    {% elif movies is defined %}
+    {# Display API error messages #}
+{% if error %}
+    <p class="discovery-error" role="alert">{{ error }}</p>
+{% endif %}
+{% if movies is defined %}
         {% if movies %}
             <div class="cards">
                 {% for movie in movies %}
@@ -40,28 +42,39 @@
                     </article>
                 {% endfor %}
             </div>
-        {% else %}
+        {% elif not error %}
             <p class="discovery-empty" role="status">No movies found. Try another search.</p>
         {% endif %}
         {% if page is defined %}
             <div class="pagination">
+                {# Previous page navigation #}
                 {% if page > 1 %}
                     {% if genre_id is defined %}
                         <a href="{{ url_for('discovery.discover_genre', genre_id=genre_id, page=page-1) }}">Previous</a>
                     {% elif mood is defined %}
                         <a href="{{ url_for('discovery.discover_mood', mood=mood, page=page-1) }}">Previous</a>
+                    {% elif search_type == "actor" %}
+                        <a href="{{ url_for('discovery.search_actor', name=query, page=page-1) }}">Previous</a>
+                    {% elif search_type == "director" %}
+                        <a href="{{ url_for('discovery.search_director', name=query, page=page-1) }}">Previous</a>
                     {% endif %}
                 {% endif %}
                 <span>Page {{ page }}</span>
-                {% if page < 500 and movies %}
+                {# Next page navigation if more pages are available #}
+                {% if total_pages is defined and total_pages is not none and page < total_pages %}
                     {% if genre_id is defined %}
                         <a href="{{ url_for('discovery.discover_genre', genre_id=genre_id, page=page+1) }}">Next</a>
                     {% elif mood is defined %}
                         <a href="{{ url_for('discovery.discover_mood', mood=mood, page=page+1) }}">Next</a>
+                    {% elif search_type == "actor" %}
+                        <a href="{{ url_for('discovery.search_actor', name=query, page=page+1) }}">Next</a>
+                    {% elif search_type == "director" %}
+                        <a href="{{ url_for('discovery.search_director', name=query, page=page+1) }}">Next</a>
                     {% endif %}
                 {% endif %}
             </div>
         {% endif %}
+
     {% endif %}
 </section>
 {% endblock %}

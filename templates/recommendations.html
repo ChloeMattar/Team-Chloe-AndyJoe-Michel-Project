@@ -17,14 +17,6 @@
 <section class="rec-cards" aria-label="Recommendation options">
 
 <article class="rec-card">
-<img src="{{ url_for('static', filename='images/rec-mood.png') }}" alt="">
-<h2><img src="{{ url_for('static', filename='images/rec-icon-mood.png') }}" alt="">Recommend by Mood</h2>
-<p>Find movies that match how you're feeling today.</p>
-{# This button reuses the existing Discover by Mood section #}
-<a class="rec-button" href="{{ url_for('discovery.discover_page') }}#mood">Choose a Mood →</a>
-</article>
-
-<article class="rec-card">
 <span class="rec-soon">Coming soon</span>
 <img src="{{ url_for('static', filename='images/rec-group.png') }}" alt="">
 <h2><img src="{{ url_for('static', filename='images/rec-icon-group.png') }}" alt="">Recommend for a Group</h2>

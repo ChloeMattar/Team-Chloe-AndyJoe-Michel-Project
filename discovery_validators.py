@@ -44,7 +44,7 @@ def validate_page (page):
         return False
     elif not page.isdigit():
         return False
-    elif int(page) <= 0: 
+    elif int(page) <= 0 or int(page) > 500: 
         return False
     else:
         return True
