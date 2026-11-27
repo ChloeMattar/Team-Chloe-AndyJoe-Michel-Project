@@ -105,9 +105,11 @@ def get_random_movie():
     movie_details = random.choice(results)
     return format_movie(movie_details, genre_map)
 
-def get_recommendations(movie_id):
+def get_recommendations(movie_id, include_error=False):
     data = tmdb_get(f"/movie/{movie_id}/recommendations")
     if data is None:
+        if include_error:
+            return None
         return []
     results = data.get("results", [])
     recommended_movie = []

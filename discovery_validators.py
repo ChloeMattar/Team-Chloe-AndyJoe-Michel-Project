@@ -1,12 +1,14 @@
 def validate_genre_id(genre_id):
     if genre_id is None:
         return False
-    elif not genre_id.isdigit():
+    # Accept only standard numeric characters
+    elif not genre_id.isascii() or not genre_id.isdigit():
         return False
-    elif int(genre_id) <= 0: 
+    # Ensure the genre ID is a positive integer
+    try:
+        return int(genre_id) > 0
+    except ValueError:
         return False
-    else:
-        return True
 
 def validate_mood(mood):
     if mood in ["happy", "emotional", "romantic", "scary", "adventurous", "mind_bending"]:
@@ -20,9 +22,15 @@ def validate_person_name(name):
 
     name = name.strip()
 
-    if name == "":
+    # Reject empty or excessively long names
+    if name == "" or len(name) > 100:
         return False
 
+    # Ensure the name contains at least one letter
+    if not any(char.isalpha() for char in name):
+        return False
+
+    # Allow letters, spaces, hyphens and apostrophes
     for char in name:
         if not (char.isalpha() or char in [" ", "-", "'", "’"]):
             return False
@@ -32,21 +40,25 @@ def validate_person_name(name):
 def validate_movie_id(movie_id):
     if movie_id is None:
         return False
-    elif not movie_id.isdigit():
+    # Accept only standard numeric characters
+    elif not movie_id.isascii() or not movie_id.isdigit():
         return False
-    elif int(movie_id) <= 0: 
+    # Ensure the movie ID is a positive integer
+    try:
+        return int(movie_id) > 0
+    except ValueError:
         return False
-    else:
-        return True
 
-def validate_page (page): 
+def validate_page(page):
     if page is None:
         return False
-    elif not page.isdigit():
+    # Accept only standard numeric characters
+    elif not page.isascii() or not page.isdigit():
         return False
-    elif int(page) <= 0 or int(page) > 500: 
+    # Ensure the page is within the allowed range
+    try:
+        return 1 <= int(page) <= 500
+    except ValueError:
         return False
-    else:
-        return True
 
 

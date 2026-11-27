@@ -20,7 +20,10 @@
         <form action="/random" method="get">
             <button type="submit" class="random-button">Surprise Me!</button>
         </form>
-
+        {# Display an error if random movie selection fails #}
+        {% if error %}
+            <p class="discovery-error" role="alert">{{ error }}</p>
+        {% endif %}
         <div class="random-perks">
             <span>No setup needed</span>
             <span>Instant surprise</span>

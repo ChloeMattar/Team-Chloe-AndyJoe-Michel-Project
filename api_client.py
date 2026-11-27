@@ -22,8 +22,13 @@ def tmdb_get(endpoint, params=None):
     timeout=TIMEOUT
     ) 
         if r.status_code != 200: 
+            print("TMDb request failed. Status code:", r.status_code)
             return None
         data = r.json()
+        # Ensure the API returns the expected dictionary structure
+        if not isinstance(data, dict):
+            print("TMDb returned an unexpected response.")
+            return None
     except requests.exceptions.JSONDecodeError as error:
         print("TMDb request failed:", error)
         return None
@@ -45,11 +50,13 @@ def get_genre_map():
     return genre_map
     
 
-def search(query):
+def search(query, include_error=False):
     """Return a list of items matching the query."""
     data = tmdb_get("/search/movie", params={"query": query})
 
     if data is None:
+        if include_error:
+            return None
         return[]
     genre_map = get_genre_map()
     return [{"id": x["id"], 

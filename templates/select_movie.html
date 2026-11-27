@@ -14,6 +14,12 @@
                required>
         <button type="submit">Search</button>
     </form>
+        # Display search validation errors, API errors or empty results 
+        {% if error %}
+            <p class="discovery-error" role="alert">{{ error }}</p>
+        {% elif query and not movies %}
+        <p class="discovery-empty" role="status">No movies found. Try another search.</p>
+    {% endif %}
     <div class="movie-results">
         {% for movie in movies %}
             <article class="card">

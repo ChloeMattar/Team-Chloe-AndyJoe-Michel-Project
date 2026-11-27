@@ -2,6 +2,7 @@ from flask import Blueprint, request,render_template, redirect, url_for
 from discovery_validators import validate_genre_id, validate_mood, validate_person_name, validate_movie_id,validate_page
 from api_client import get_genre_map
 from discovery import discover_by_genre, discover_by_mood, search_actor as api_search_actor, search_director as api_search_director, get_random_movie, get_recommendations
+from validators import validate_search
 import api_client
 discovery_bp = Blueprint("discovery", __name__)
 
@@ -14,6 +15,19 @@ def discover_genre():
     elif (not validate_page(page)):
         return f"Invalid Page", 400
     else: 
+        # Retrieve the available TMDb genres
+        genre_map = get_genre_map()
+        # Handle failure to retrieve the available genres
+        if not genre_map:
+            error = "Unable to retrieve genres. Please try again later."
+            return render_template(
+                "discovery_results.html",
+                movies=[],
+                error=error
+            ), 503
+        # Check whether the genre ID exists
+        if int(genre_id) not in genre_map:
+            return "Invalid Genre ID", 400
         # Retrieve movies and pagination information
         movies, total_pages = discover_by_genre(genre_id, int(page), include_pagination=True)
         error = None
@@ -91,8 +105,10 @@ def search_director():
 def random_movie (): 
     movie = get_random_movie ()
     if movie is None:
-        return f"No movie was selected", 503
+        error = "Unable to select a random movie. Please try again later."
+        return render_template("pick_movie.html", error=error), 503
     else:
+        # Redirect to the selected movie's details page
         return redirect(url_for("item", item_id=movie["id"], from_random=1))
 
 @discovery_bp.route("/recommendations/<movie_id>")
@@ -100,8 +116,14 @@ def get_movie_recommendations(movie_id):
     if not validate_movie_id(movie_id):
         return "Invalid Movie ID", 400
     else:
-        movies = get_recommendations(movie_id)
-        return render_template("discovery_results.html", movies=movies, search_type="recommendations")
+        movies = get_recommendations(movie_id, include_error=True)
+        error = None
+        # Handle API request failures
+        if movies is None:
+            error = "Unable to retrieve recommendations. Please try again later."
+            movies = []
+        # Pass recommendations and error message to the template
+        return render_template("discovery_results.html", movies=movies, search_type="recommendations", error=error)
 
 @discovery_bp.route("/recommendations")
 def recommendations_page():
@@ -120,6 +142,14 @@ def pick_movie():
 def select_recommendation_movie():
     query = request.args.get("q", "").strip()
     movies = []
-    if query:
-        movies = api_client.search(query)
-    return render_template("select_movie.html", movies=movies, query=query)
+    error = None
+    if "q" in request.args:
+        error = validate_search(query)
+        # Search for movies only if the query is valid
+        if error is None:
+            movies = api_client.search(query, include_error=True)
+            # Handle API request failures
+            if movies is None:
+                error = "Unable to search for movies. Please try again later."
+                movies = []
+    return render_template("select_movie.html", movies=movies, query=query, error=error)
