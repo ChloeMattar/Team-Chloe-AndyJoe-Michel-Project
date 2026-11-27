@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}My Marathons - MatchIt{% endblock %}
+{% block content %}
+<h1>My Marathons</h1>
+
+<h2>Create a Marathon</h2>
+<form method="post" action="{{ url_for('marathons_create') }}">
+    {% if movie_id %}
+    <input type="hidden" name="movie_id" value="{{ movie_id }}">
+    {% endif %}
+    <label for="title">Marathon Title</label>
+    <input type="text" id="title" name="title" maxlength="255" required>
+    <button type="submit">Create Marathon</button>
+</form>
+
+<h2>Your Marathons</h2> <!-- Display the user's marathons -->
+{% if marathons %}
+  {% for marathon in marathons %}
+    <article>
+      <h3>{{ marathon.title }}</h3>
+      <a href="{{ url_for('marathon_details', marathon_id=marathon.marathon_id) }}">View Marathon</a>
+
+      {% if movie_id %}
+        <form method="post" action="{{ url_for('marathon_add_movie', marathon_id=marathon.marathon_id) }}">
+          <input type="hidden" name="movie_id" value="{{ movie_id }}">
+          <button type="submit">Add Movie</button>
+        </form>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('marathon_delete', marathon_id=marathon.marathon_id) }}">
+        <button type="submit">Delete Marathon</button>
+      </form>
+    </article>
+  {% endfor %}
+{% else %}
+  <p>You have not created any marathons yet.</p>
+{% endif %}
+{% endblock %}

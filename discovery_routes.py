@@ -35,7 +35,7 @@ def discover_genre():
         if total_pages is None:
             error = "Unable to retrieve movies. Please try again later."
         # Pass the results, pagination and error message to the template
-        return render_template("discovery_results.html", movies=movies, page=int(page), genre_id=genre_id, total_pages=total_pages, error=error)
+        return render_template("discovery_results.html", movies=movies, page=int(page), genre_id=genre_id,genre_name=genre_map[int(genre_id)], total_pages=total_pages, error=error)
 
 @discovery_bp.route("/discover/mood")
 def discover_mood():

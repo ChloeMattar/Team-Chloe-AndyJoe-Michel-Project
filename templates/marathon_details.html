@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ marathon.title }} - MatchIt{% endblock %}
+{% block content %}
+<h1>{{ marathon.title }}</h1>
+<a href="{{ url_for('marathons') }}">Back to My Marathons</a>
+
+{% if movies %} {# Display movies inside the marathon #}
+  {% for movie in movies %}
+    <article>
+      <a href="{{ url_for('item', item_id=movie.id) }}">
+        {% if movie.image %}
+          <img src="{{ movie.image }}" alt="{{ movie.title }}">
+        {% endif %}
+        <h3>{{ movie.title }}</h3>
+      </a>
+
+      {# Display movie completion status #}
+      {% if movie.id in completed_ids %}
+        <p>Watched</p>
+      {% else %}
+        <p>Not Watched</p>
+      {% endif %}
+
+      {# Change movie completion status #}
+      <form method="post" action="{{ url_for('marathon_toggle_movie', marathon_id=marathon.marathon_id) }}">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        {% if movie.id in completed_ids %}
+          <button type="submit">Mark as Unwatched</button>
+        {% else %}
+          <button type="submit">Mark as Watched</button>
+        {% endif %}
+      </form>
+
+      <form method="post" action="{{ url_for('marathon_remove_movie', marathon_id=marathon.marathon_id) }}">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        <button type="submit">Remove Movie</button>
+      </form>
+    </article>
+  {% endfor %}
+{% else %}
+  <p>No movies in this marathon yet.</p>
+{% endif %}
+{% endblock %}

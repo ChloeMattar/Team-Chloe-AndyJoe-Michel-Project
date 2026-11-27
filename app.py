@@ -10,7 +10,7 @@ Run locally:   flask run --debug    ->   http://127.0.0.1:5000
 import os
 from functools import wraps
 from discovery_routes import discovery_bp
-
+from discovery_validators import validate_movie_id
 from flask import (Flask, render_template, request, redirect, url_for,
                    session, flash, abort)
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -151,13 +151,14 @@ def signup():
 def login():
     if request.method == "POST":
         errors, username = validate_login(request.form)
-        # Find the user by username
-        user = User.query.filter_by(username=username).first()
-        # Check the username and password
-        if not user or not check_password_hash(
-            user.password_hash, request.form.get("password", "")
-        ):
-            errors["login"] = "Invalid username or password."
+        if not errors:
+            # Find the user by username
+            user = User.query.filter_by(username=username).first()
+            # Check the username and password
+            if not user or not check_password_hash(
+                user.password_hash, request.form.get("password", "")
+            ):
+                errors["login"] = "Invalid username or password."
         if not errors:
             session.clear()
             session["user_id"] = user.user_id
@@ -225,26 +226,34 @@ def favorites_remove():
 @app.route("/marathons")
 @login_required
 def marathons():
+    movie_id = request.args.get("movie_id")
+    # Validate the movie ID when provided
+    if movie_id is not None:
+        if not validate_movie_id(movie_id):
+            return "Invalid Movie ID", 400
     items = Marathon.query.filter_by(user_id=session["user_id"]).all()
-    return render_template("marathons.html",marathons=items)
+    return render_template("marathons.html", marathons=items, movie_id=movie_id)
 
 @app.route("/marathons/create",methods=["POST"])
 @login_required
 def marathons_create():
     title = request.form.get("title", "").strip()
+    movie_id = request.form.get("movie_id")
+    if movie_id is not None and not validate_movie_id(movie_id):
+        return "Invalid Movie ID", 400
     if title == "":
         flash("Marathon title is required.")
-        return redirect(url_for("marathons"))
+        return redirect(url_for("marathons", movie_id=movie_id))
     if len(title) > 255:
         flash("Marathon title is too large")
-        return redirect(url_for("marathons"))
+        return redirect(url_for("marathons", movie_id=movie_id))
     marathon = Marathon(user_id=session["user_id"], title=title)
     
     db.session.add(marathon)
     db.session.commit()
     
     flash("Marathon created successfully.")
-    return redirect(url_for("marathons"))
+    return redirect(url_for("marathons", movie_id=movie_id))
 
 @app.route("/marathons/<int:marathon_id>")
 @login_required

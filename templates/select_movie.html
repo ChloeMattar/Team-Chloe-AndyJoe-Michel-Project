@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Select a Movie - MatchIt{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='discovery.css') }}">
 <section class="discovery-page">
     <h1>Select a Movie</h1>
     <p>Search for a movie you love to discover similar movies.</p>
@@ -14,13 +15,13 @@
                required>
         <button type="submit">Search</button>
     </form>
-        # Display search validation errors, API errors or empty results 
+        {# Display search validation errors, API errors or empty results#}
         {% if error %}
             <p class="discovery-error" role="alert">{{ error }}</p>
         {% elif query and not movies %}
         <p class="discovery-empty" role="status">No movies found. Try another search.</p>
     {% endif %}
-    <div class="movie-results">
+    <div class="cards">
         {% for movie in movies %}
             <article class="card">
                 <a href="{{ url_for('discovery.get_movie_recommendations', movie_id=movie.id) }}">

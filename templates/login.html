@@ -3,7 +3,9 @@
 {% block content %}
 <form method="post" action="{{ url_for('login') }}" novalidate class="auth">
   <h1>Log in</h1>
-
+  {% if errors.get('login') %}
+    <p class="error" role="alert">{{ errors['login'] }}</p>
+{% endif %}
   <label>Username <input type="username" name="username" value="{{ data.get('username','') }}"></label>
   {% if errors.get('username') %}<span class="error">{{ errors['username'] }}</span>{% endif %}
   

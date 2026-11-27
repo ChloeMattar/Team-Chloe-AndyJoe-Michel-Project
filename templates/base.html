@@ -21,6 +21,7 @@
 
       {% if current_user %}
         <a href="{{ url_for('favorites') }}"><strong>My Favorites</strong></a>
+        <a href="{{ url_for('marathons') }}"><strong>My Marathons</strong></a>
         <span class="who">{{ current_user.email }}</span>
         <a href="{{ url_for('logout') }}"><strong>Log out</strong></a>
       {% else %}

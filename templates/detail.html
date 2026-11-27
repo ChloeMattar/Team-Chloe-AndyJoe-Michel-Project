@@ -70,8 +70,7 @@
     <a href="{{ url_for('login') }}" class="action-btn favorite-btn"><span class="btn-icon" aria-hidden="true">♡</span> Add to Favorites</a>
 {% endif %}
 
-<a href="{{ url_for('marathons') }}" class="action-btn marathon-btn"><span class="btn-icon" aria-hidden="true">⊕</span> Add to Marathon</a>
-
+<a href="{{ url_for('marathons', movie_id=item.id) }}" class="action-btn marathon-btn"><span class="btn-icon" aria-hidden="true">⊕</span> Add to Marathon</a>
 </div>
 
 {% if not current_user %}
